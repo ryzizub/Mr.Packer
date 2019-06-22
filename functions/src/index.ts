@@ -67,7 +67,7 @@ app.intent('experience', async (conv: DialogflowConversation, { experience }: { 
         conv.ask("Awesome! Thats nice. Take these things.");
         conv.ask(response);
         await expCore.checkAndUpdateExperiences(experience);
-        conv.ask("Can I help you again?");
+        conv.ask("Want me to create a TO-DO list in your tasks?");
     } else {
         conv.ask('I dont understand you. What are you going to do there?');
         const exp = await expCore.loadExperiences();
@@ -75,8 +75,27 @@ app.intent('experience', async (conv: DialogflowConversation, { experience }: { 
     }
 });
 
+app.intent('experience - yes', async (conv: DialogflowConversation) => {
+   // conv.ask(new SignIn('To get your account details'));
+});
 
-app.intent('experience - yes',  async (conv: DialogflowConversation) => {
+app.intent('experience - no - yes', async (conv: DialogflowConversation) => {
+    conv.user.storage.days = null;
+    conv.user.storage.experience = null;
+    conv.ask('For how many days are you going?');
+    conv.ask(new Suggestions(['1 day', '3 days', '1 week', '2 weeks', '1 month']));
+});
+
+app.intent('to-do list', async (conv: DialogflowConversation, params: any, signin: any) => {
+    /*if (signin.status === 'OK') {
+        const payload = conv.user.profile.payload;
+        conv.ask(`I got your account details, ${payload.name}. Can i help you again?`);
+    } else {
+        conv.ask(`I won't be able to save your data, but can i help you again?`);
+    } */
+});
+
+app.intent('to-do list - yes', async (conv: DialogflowConversation) => {
     conv.user.storage.days = null;
     conv.user.storage.experience = null;
     conv.ask('For how many days are you going?');
@@ -84,5 +103,6 @@ app.intent('experience - yes',  async (conv: DialogflowConversation) => {
 });
 
 
+app.intent
 export const fulfillment = functions.https.onRequest(app);
 export const makeExperienceList = expCore.makeExperienceList;
